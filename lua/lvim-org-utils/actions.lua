@@ -102,11 +102,11 @@ local text_without_link = function(line, word)
 end
 
 local create_link = function(words)
-    local config = require("lvim-orglinks.config")
+    local config = require("lvim-org-utils.config")
     if words:match("/") then
         local path = vim.fn.fnamemodify(words, ":p:h")
         vim.api.nvim_command("!mkdir -p " .. path)
-        local current_path = config.org_path
+        local current_path = config.links.org_path
         pcall(vim.api.nvim_command("!cp " .. current_path .. ".gitignore " .. path))
         local tag = vim.fn.input("Enter link name: ")
         local link = string.format("[[%s][%s]]", words, tag)
@@ -131,7 +131,6 @@ local follow_link = function(link)
     end
     if vim.loop.fs_stat(link) then
         vim.cmd("e " .. link)
-        -- vim.cmd("lcd %:h:t")
         local bufnr = vim.api.nvim_get_current_buf()
         if not ok then
             table.insert(newwin.buffers, bufnr)
@@ -342,7 +341,7 @@ M.hover = function()
             vim.notify("Broken or non-existant hyperlink")
             return
         end
-        require("lvim-orglinks.preview").open_or_focus(output)
+        require("lvim-org-utils.preview").open_or_focus(output)
     end
 end
 

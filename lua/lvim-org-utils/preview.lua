@@ -1,6 +1,5 @@
 local ffi = require("ffi")
 local Preview = {}
-
 local border_shift = { -1, -1, -1, -1 }
 
 local preview = {}
@@ -68,10 +67,10 @@ function Preview.show_preview(file)
     vim.wo[winid].signcolumn = "no"
     preview.current_win = winid
     preview[curbufnr].close = function()
-        if vim.fn.win_gettype(preview.current_win) ~= "unknown" then
+        if vim.fn.win_gettype(preview.current_win) ~= "unknown" and preview.current_win ~= nil then
             vim.api.nvim_win_close(preview.current_win, false)
         end
-        if vim.fn.bufexists(preview.current_buf) == 1 then
+        if vim.fn.bufexists(preview.current_buf) == 1 and bufnr ~= nil then
             vim.schedule(function()
                 vim.api.nvim_buf_delete(bufnr, { force = true, unload = false })
             end)
@@ -90,7 +89,7 @@ function Preview.show_preview(file)
         vim.api.nvim_win_set_width(winid, max_line_len < room_right and max_line_len or room_right)
     end
     if not auid then
-        auid = vim.api.nvim_create_augroup("org_preview", { clear = true })
+        auid = vim.api.nvim_create_augroup("LvimOrgUtils", { clear = true })
     end
     vim.api.nvim_create_autocmd({ "CursorMoved", "CmdlineEnter", "InsertEnter" }, {
         group = auid,
@@ -126,10 +125,14 @@ function Preview.show_preview(file)
             preview[curbufnr].resize()
         end,
     })
-    vim.keymap.set("n", "<Esc>", preview[curbufnr].close, { buffer = curbufnr, desc = "Close preview" })
-    vim.keymap.set("n", "q", preview[curbufnr].close, { buffer = curbufnr, desc = "Close preview" })
-    vim.keymap.set("n", "<Esc>", preview[curbufnr].close, { buffer = bufnr, desc = "Close preview" })
-    vim.keymap.set("n", "q", preview[curbufnr].close, { buffer = bufnr, desc = "Close preview" })
+    if bufnr ~= nil then
+        vim.keymap.set("n", "<Esc>", preview[curbufnr].close, { buffer = bufnr, desc = "Close preview" })
+        vim.keymap.set("n", "q", preview[curbufnr].close, { buffer = bufnr, desc = "Close preview" })
+    end
+    if curbufnr ~= nil then
+        vim.keymap.set("n", "<Esc>", preview[curbufnr].close, { buffer = curbufnr, desc = "Close preview" })
+        vim.keymap.set("n", "q", preview[curbufnr].close, { buffer = curbufnr, desc = "Close preview" })
+    end
 end
 
 function Preview.open_or_focus(path)

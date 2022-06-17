@@ -1,6 +1,9 @@
 local M = {}
 local config = require("lvim-org-utils.config")
 local actions = require("lvim-org-utils.actions")
+group = vim.api.nvim_create_augroup("LvimOrgUtils", {
+    clear = true,
+})
 
 M.setup_keymaps = function()
     local group = vim.api.nvim_create_augroup("LvimOrgUtils", {
