@@ -1,7 +1,7 @@
 local M = {
     links = {
         active = true,
-        org_path = { "/home/biserstoilov/BS/" },
+        org_path = { "~/Org/" },
         keymaps = {
             create_or_follow = "<CR>",
             traverse_back = "<BS>",
