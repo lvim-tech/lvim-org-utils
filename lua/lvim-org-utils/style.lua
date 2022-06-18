@@ -1,7 +1,7 @@
 local M = {}
 
 local config = require("lvim-org-utils.config")
-local NAMESPACE = vim.api.nvim_create_namespace("org-bullets")
+local NAMESPACE = vim.api.nvim_create_namespace("lvim-org-utils-style")
 local org_headline_hl = "OrgTSHeadlineLevel"
 local list_groups = {
     ["-"] = "OrgTSHeadlineLevel1",

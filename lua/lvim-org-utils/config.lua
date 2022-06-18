@@ -25,6 +25,10 @@ local M = {
         indent = true,
         concealcursor = true,
     },
+    codeblock = {
+        active = true,
+        hl = "OrgTSCode",
+    },
 }
 
 return M

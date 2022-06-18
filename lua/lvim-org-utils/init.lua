@@ -2,6 +2,7 @@ local config = require("lvim-org-utils.config")
 local utils = require("lvim-org-utils.utils")
 local autocmd = require("lvim-org-utils.autocmd")
 local style = require("lvim-org-utils.style")
+local codeblock = require("lvim-org-utils.codeblock")
 
 local M = {}
 
@@ -15,6 +16,9 @@ M.setup = function(user_config)
         end
         if config.style.active then
             style.init()
+        end
+        if config.codeblock.active then
+            codeblock.init()
         end
     end)
 end
