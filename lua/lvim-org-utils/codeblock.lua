@@ -40,7 +40,7 @@ M.init = function()
         "InsertLeave",
         "WinScrolled",
     }, {
-        pattern = "org",
+        pattern = "*.org",
         callback = function()
             hl()
         end,
