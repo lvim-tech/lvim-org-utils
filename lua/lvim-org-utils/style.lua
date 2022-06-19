@@ -188,31 +188,26 @@ local function get_mark_positions(bufnr, start_row, end_row)
 end
 
 M.init = function()
-    vim.api.nvim_create_autocmd({
-        "FileType",
-    }, {
-        pattern = "org",
-        callback = function()
-            vim.api.nvim_set_decoration_provider(NAMESPACE, {
-                on_start = function(_, tick)
-                    local buf = vim.api.nvim_get_current_buf()
-                    if ticks[buf] == tick then
-                        return false
-                    end
-                    ticks[buf] = tick
-                    return true
-                end,
-                on_win = function(_, _, bufnr, topline, botline)
-                    local positions = get_mark_positions(bufnr, topline, botline)
-                    set_position_marks(bufnr, positions)
-                end,
-                on_line = function(_, _, bufnr, row)
-                    local positions = get_mark_positions(bufnr, row, row + 1)
-                    set_position_marks(bufnr, positions)
-                end,
-            })
+    vim.api.nvim_set_decoration_provider(NAMESPACE, {
+        on_start = function(_, tick)
+            local buf = vim.api.nvim_get_current_buf()
+            if ticks[buf] == tick then
+                return false
+            end
+            ticks[buf] = tick
+            return true
         end,
-        group = "LvimOrgUtils",
+        on_win = function(_, _, bufnr, topline, botline)
+            if vim.bo[bufnr].filetype ~= "org" then
+                return false
+            end
+            local positions = get_mark_positions(bufnr, topline, botline)
+            set_position_marks(bufnr, positions)
+        end,
+        on_line = function(_, _, bufnr, row)
+            local positions = get_mark_positions(bufnr, row, row + 1)
+            set_position_marks(bufnr, positions)
+        end,
     })
 end
 
