@@ -1,14 +1,8 @@
 local M = {}
 local config = require("lvim-org-utils.config")
 local actions = require("lvim-org-utils.actions")
-group = vim.api.nvim_create_augroup("LvimOrgUtils", {
-    clear = true,
-})
 
-M.setup_keymaps = function()
-    local group = vim.api.nvim_create_augroup("LvimOrgUtils", {
-        clear = true,
-    })
+M.init = function()
     vim.api.nvim_create_autocmd("FileType", {
         pattern = "org",
         callback = function()
@@ -41,7 +35,7 @@ M.setup_keymaps = function()
                 { buffer = true, desc = "Preview link in popup window" }
             )
         end,
-        group = group,
+        group = "LvimOrgUtils",
     })
 end
 
