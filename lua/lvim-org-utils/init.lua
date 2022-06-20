@@ -10,6 +10,15 @@ M.setup = function(user_config)
     vim.api.nvim_create_augroup("LvimOrgUtils", {
         clear = true,
     })
+    vim.api.nvim_create_autocmd({
+        "BufWinEnter",
+    }, {
+        pattern = "*.org",
+        callback = function()
+            vim.cmd([[write!]])
+            vim.cmd([[edit!]])
+        end,
+    })
     if user_config ~= nil then
         utils.merge(config, user_config)
     end

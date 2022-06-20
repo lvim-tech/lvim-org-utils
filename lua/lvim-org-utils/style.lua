@@ -165,9 +165,6 @@ end
 local get_parser = (function()
     local parsers = {}
     return function(bufnr)
-        if parsers[bufnr] then
-            return parsers[bufnr]
-        end
         parsers[bufnr] = vim.treesitter.get_parser(bufnr, "org", {})
         return parsers[bufnr]
     end
