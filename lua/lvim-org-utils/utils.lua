@@ -86,7 +86,7 @@ end
 M.allow_leave = function()
     prompt.prompt({
         data = {
-            title = "Saveeee or lose before leave?",
+            title = "Save or lose before leave?",
             lines = {
                 {
                     text = "Save",
@@ -109,6 +109,10 @@ M.allow_leave = function()
         },
         opt = {},
     })
+end
+
+M.custom_prompt = function(data)
+    prompt.prompt(data)
 end
 
 return M
