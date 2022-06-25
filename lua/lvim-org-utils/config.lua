@@ -3,11 +3,13 @@ local M = {
         active = true,
         org_path = { "~/Org/" },
         keymaps = {
-            create_or_follow = "<CR>",
-            traverse_back = "<BS>",
-            go_to_next = "n",
-            go_to_prev = "N",
-            hover = "K",
+            open = "<CR>",
+            next_file = "m",
+            prev_file = "M",
+            next_link = "n",
+            prev_link = "N",
+            -- back = "<BS>",
+            preview = "P",
         },
     },
     style = {

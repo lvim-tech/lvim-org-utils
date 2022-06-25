@@ -61,7 +61,7 @@ local markers = {
 }
 
 local function set_mark(bufnr, virt_text, lnum, start_col, end_col, highlight)
-    local ok, result = pcall(vim.api.nvim_buf_set_extmark, bufnr, NAMESPACE, lnum, start_col, {
+    local ok, _ = pcall(vim.api.nvim_buf_set_extmark, bufnr, NAMESPACE, lnum, start_col, {
         end_col = end_col,
         hl_group = highlight,
         virt_text = virt_text,
@@ -71,7 +71,7 @@ local function set_mark(bufnr, virt_text, lnum, start_col, end_col, highlight)
     })
     if not ok then
         vim.schedule(function()
-            vim.notify_once(result, "error", { title = "Org bullets" })
+            vim.notify_once(result, "error", { title = "LVIM ORG" })
         end)
     end
 end
