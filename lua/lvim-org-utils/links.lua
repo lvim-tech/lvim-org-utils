@@ -127,60 +127,17 @@ end
 local link_open = function(file)
     local is_file_exist = utils.file_exists(file)
     if is_file_exist then
-        if vim.bo.modified then
-            select(
-                { "Save", "Lose", "Show full path", "Cancel" },
-                { prompt = "Save or lose before leave?" },
-                function(choice)
-                    if choice == "Save" then
-                        vim.cmd("write!")
-                        vim.cmd("e " .. file)
-                    elseif choice == "Lose" then
-                        vim.cmd("earlier 1f")
-                        vim.cmd("write!")
-                        vim.cmd("e " .. file)
-                    elseif choice == "Show full path" then
-                        vim.notify("Full path of file:\n" .. file, "info", {
-                            title = "LVIM ORG",
-                        })
-                    end
-                end
-            )
-        else
-            vim.cmd("e " .. file)
-        end
+        vim.cmd("e " .. file)
     else
-        if vim.bo.modified then
-            select({
-                "Save this file and create new file",
-                "Lose changes of this file and create new file",
-                "Show full path",
-                "Cancel",
-            }, { prompt = "File not exist!" }, function(choice)
-                if choice == "Save this file and create new file" then
-                    vim.cmd("write!")
-                    create_file(file)
-                elseif choice == "Lose changes of this file and create new file" then
-                    vim.cmd("earlier 1f")
-                    vim.cmd("write!")
-                    vim.cmd("e " .. file)
-                elseif choice == "Show full path" then
-                    vim.notify("Full path of file:\n" .. file, "info", {
-                        title = "LVIM ORG",
-                    })
-                end
-            end)
-        else
-            select({ "Create new file", "Show full path", "Cancel" }, { prompt = "File not exist!" }, function(choice)
-                if choice == "Create new file" then
-                    create_file(file)
-                elseif choice == "Show full path" then
-                    vim.notify("Full path of file:\n" .. file, "info", {
-                        title = "LVIM ORG",
-                    })
-                end
-            end)
-        end
+        select({ "Create new file", "Show full path", "Cancel" }, { prompt = "File not exist!" }, function(choice)
+            if choice == "Create new file" then
+                create_file(file)
+            elseif choice == "Show full path" then
+                vim.notify("Full path of file:\n" .. file, "info", {
+                    title = "LVIM ORG",
+                })
+            end
+        end)
     end
 end
 

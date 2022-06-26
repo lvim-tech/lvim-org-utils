@@ -4,7 +4,7 @@ local NAMESPACE = vim.api.nvim_create_namespace("lvim-org-utils-codeblock")
 source_pattern_start = "#%+[bB][eE][gG][iI][nN]_[sS][rR][cC]"
 source_pattern_end = "#%+[eE][nN][dD]_[sS][rR][cC]"
 
-local function hl()
+M.code_block = function()
     vim.api.nvim_buf_clear_namespace(0, NAMESPACE, 0, -1)
     local bufnr = vim.api.nvim_get_current_buf()
     local offset = math.max(vim.fn.line("w0") - 1, 0)
@@ -29,23 +29,6 @@ local function hl()
             is_code = false
         end
     end
-end
-
-M.init = function()
-    vim.api.nvim_create_autocmd({
-        "FileChangedShellPost",
-        "Syntax",
-        "CursorMoved",
-        "TextChanged",
-        "InsertLeave",
-        "WinScrolled",
-    }, {
-        pattern = "*.org",
-        callback = function()
-            hl()
-        end,
-        group = "LvimOrgUtils",
-    })
 end
 
 return M
