@@ -74,15 +74,16 @@ local next_link = function()
                 if cursor_position[1] == link_position[2] then
                     if cursor_position[2] < link_position[1] - 1 then
                         vim.api.nvim_win_set_cursor(winnr, { link_position[2], link_position[1] })
-                        return
+                        return true
                     end
                 else
                     vim.api.nvim_win_set_cursor(winnr, { link_position[2], link_position[1] })
-                    return
+                    return true
                 end
             end
         end
     end
+    return false
 end
 
 local prev_link = function()
@@ -98,15 +99,16 @@ local prev_link = function()
                 if cursor_position[1] == link_position[2] then
                     if cursor_position[2] > link_position[1] + 1 then
                         vim.api.nvim_win_set_cursor(winnr, { link_position[2], link_position[1] })
-                        return
+                        return true
                     end
                 else
                     vim.api.nvim_win_set_cursor(winnr, { link_position[2], link_position[1] })
-                    return
+                    return true
                 end
             end
         end
     end
+    return false
 end
 
 local create_file = function(file)
@@ -182,56 +184,98 @@ local link_open = function(file)
     end
 end
 
+local word_normalizer = function()
+    local winnr = vim.api.nvim_get_current_win()
+    local line = vim.api.nvim_get_current_line()
+    local word = vim.fn.expand("<cWORD>")
+    local word_escape = utils.regex_escape(word)
+    local cursor_position = vim.api.nvim_win_get_cursor(winnr)
+    local links_position = find_links_position(line, 0)
+    local all_links_position = {}
+    local all_links_position_reverse = {}
+    if next(links_position) then
+        for _, link_position in ipairs(links_position) do
+            table.insert(all_links_position, link_position[1])
+        end
+        all_links_position_reverse = utils.reverse_table(all_links_position)
+
+        for _, all_link_position_reverse in ipairs(all_links_position_reverse) do
+            if cursor_position[2] >= all_link_position_reverse then
+                vim.api.nvim_win_set_cursor(winnr, { cursor_position[1], all_link_position_reverse })
+                break
+            end
+        end
+    end
+    word = vim.fn.expand("<cWORD>")
+    word_escape = utils.regex_escape(word)
+    if string.find(word, "%[%[") then
+        i, j = string.find(line, word_escape .. "? (.-)%]%]")
+    end
+    if type(i) == "number" and type(j) == "number" then
+        word = string.sub(line, i, j)
+        return word
+    end
+    return nil
+end
+
 local link_prepare = function()
     local word = vim.fn.expand("<cWORD>")
-    local link = find_link_string(word)
-    local is_external = false
-    local is_link = check_is_link(link)
-    if is_link == "external" then
-        is_external = true
-    elseif check_is_org(link) then
-        if is_link == "home_path" then
-            local home_path = os.getenv("HOME")
-            link = link:gsub("^~", home_path)
-        elseif is_link == "relative_path" then
-            local current_path = vim.fn.expand("%:p:h")
-            link = link:gsub("^.", current_path)
-        elseif is_link == "relative_path_back" then
-            local current_path = vim.fn.expand("%:p:h")
-            local split_current_path = utils.split(current_path, "/")
-            table.remove(split_current_path, 1)
-            local link_length = string.len(link)
-            local counter = 0
-            while true do
-                link = link:gsub("^../", "")
-                if string.len(link) < link_length then
-                    link_length = string.len(link)
-                    counter = counter + 1
-                else
-                    break
-                end
-            end
-            local split_link_length = #split_current_path - counter
-            local real_link = ""
-            for index, value in ipairs(split_current_path) do
-                if index <= split_link_length then
-                    real_link = real_link .. "/" .. value
-                end
-            end
-            link = real_link .. "/" .. link
-        end
-    else
-        return { nil, nil }
+    if not string.find(word, "%[%[(.-)%]%[?(.-)%]?%]") then
+        word = word_normalizer()
     end
-    return { link, is_external }
+    if word ~= nil then
+        local link = find_link_string(word)
+        local is_external = false
+        local is_link = check_is_link(link)
+        if is_link == "external" then
+            is_external = true
+        elseif check_is_org(link) then
+            if is_link == "home_path" then
+                local home_path = os.getenv("HOME")
+                link = link:gsub("^~", home_path)
+            elseif is_link == "relative_path" then
+                local current_path = vim.fn.expand("%:p:h")
+                link = link:gsub("^.", current_path)
+            elseif is_link == "relative_path_back" then
+                local current_path = vim.fn.expand("%:p:h")
+                local split_current_path = utils.split(current_path, "/")
+                table.remove(split_current_path, 1)
+                local link_length = string.len(link)
+                local counter = 0
+                while true do
+                    link = link:gsub("^../", "")
+                    if string.len(link) < link_length then
+                        link_length = string.len(link)
+                        counter = counter + 1
+                    else
+                        break
+                    end
+                end
+                local split_link_length = #split_current_path - counter
+                local real_link = ""
+                for index, value in ipairs(split_current_path) do
+                    if index <= split_link_length then
+                        real_link = real_link .. "/" .. value
+                    end
+                end
+                link = real_link .. "/" .. link
+            end
+        else
+            return { nil, nil }
+        end
+        return { link, is_external }
+    end
+    return nil
 end
 
 local open = function()
     local link = link_prepare()
-    if link[1] ~= nil and link[2] then
-        open_external_link(link[1])
-    elseif link[1] ~= nil then
-        link_open(link[1])
+    if link ~= nil then
+        if link[1] ~= nil and link[2] then
+            open_external_link(link[1])
+        elseif link[1] ~= nil then
+            link_open(link[1])
+        end
     end
 end
 
@@ -300,10 +344,12 @@ end
 
 local preview = function()
     local link = link_prepare()
-    if link[1] ~= nil and link[2] then
-        open_external_link(link[1])
-    elseif link[1] ~= nil then
-        preview_open(link[1])
+    if link ~= nil then
+        if link[1] ~= nil and link[2] then
+            open_external_link(link[1])
+        elseif link[1] ~= nil then
+            preview_open(link[1])
+        end
     end
 end
 

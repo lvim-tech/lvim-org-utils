@@ -83,6 +83,14 @@ M.file_exists = function(name)
     return f ~= nil and io.close(f)
 end
 
+-- https://gist.github.com/VADemon/afb10dbb0d10d99aeb21449752da6285
+-- string.replace = function(str, this, that)
+--     return str:gsub(regexEscape(this), that:gsub("%%", "%%%%")) -- only % needs to be escaped for 'that'
+-- end
+M.regex_escape = function(str)
+    return str:gsub("[%(%)%.%%%+%-%*%?%[%^%$%]]", "%%%1")
+end
+
 M.allow_leave = function()
     prompt.prompt({
         data = {
