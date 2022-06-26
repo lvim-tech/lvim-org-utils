@@ -286,6 +286,10 @@ local preview_open = function(link)
                 popup_reference:unmount()
                 popup_reference = nil
             end, { noremap = true })
+            popup_reference:map("n", "<space>", function()
+                popup_reference:unmount()
+                popup_reference = nil
+            end, { noremap = true })
             popup_reference:map("n", "q", function()
                 popup_reference:unmount()
                 popup_reference = nil
