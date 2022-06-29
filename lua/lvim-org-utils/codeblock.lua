@@ -7,8 +7,8 @@ source_pattern_end = "#%+[eE][nN][dD]_[sS][rR][cC]"
 M.code_block = function()
     vim.api.nvim_buf_clear_namespace(0, NAMESPACE, 0, -1)
     local bufnr = vim.api.nvim_get_current_buf()
-    local offset = math.max(vim.fn.line("w0") - 1, 0)
-    local range = math.min(vim.fn.line("w$"), vim.api.nvim_buf_line_count(bufnr))
+    local offset = 0
+    local range = vim.api.nvim_buf_line_count(bufnr)
     local lines = vim.api.nvim_buf_get_lines(bufnr, offset, range, false)
     local is_code = false
     for i = 1, #lines do
