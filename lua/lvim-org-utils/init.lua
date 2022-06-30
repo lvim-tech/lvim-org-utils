@@ -15,25 +15,22 @@ M.setup = function(user_config)
     })
     vim.api.nvim_create_autocmd({
         "BufEnter",
-        "WinEnter",
     }, {
         pattern = "*.org",
         callback = function()
             if vim.bo.modified == false then
                 vim.cmd("edit!")
             end
+            if config.links.active then
+                links.navigation()
+            end
         end,
         group = group,
     })
     vim.api.nvim_create_autocmd({
         "BufEnter",
-        "WinEnter",
-        "FileChangedShellPost",
-        "Syntax",
-        "CursorMoved",
-        "TextChanged",
+        "InsertEnter",
         "InsertLeave",
-        "WinScrolled",
     }, {
         pattern = "*.org",
         callback = function()
@@ -41,13 +38,10 @@ M.setup = function(user_config)
                 vim.schedule(function()
                     vim.cmd([[setlocal foldexpr=OrgmodeFoldExpr()]])
                 end)
+                if config.codeblock.active then
+                    codeblock.code_block()
+                end
             end)
-            if config.links.active then
-                links.navigation()
-            end
-            if config.codeblock.active then
-                codeblock.code_block()
-            end
         end,
         group = group,
     })
