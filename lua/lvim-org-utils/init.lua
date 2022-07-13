@@ -14,13 +14,21 @@ M.setup = function(user_config)
         clear = true,
     })
     vim.api.nvim_create_autocmd({
-        "BufEnter",
+        "BufRead",
     }, {
         pattern = "*.org",
         callback = function()
             if vim.bo.modified == false then
                 vim.cmd("edit!")
             end
+        end,
+        group = group,
+    })
+    vim.api.nvim_create_autocmd({
+        "BufEnter",
+    }, {
+        pattern = "*.org",
+        callback = function()
             if config.links.active then
                 links.navigation()
             end
@@ -31,6 +39,8 @@ M.setup = function(user_config)
         "BufEnter",
         "InsertEnter",
         "InsertLeave",
+        "CursorMoved",
+        "CursorMovedI",
     }, {
         pattern = "*.org",
         callback = function()
