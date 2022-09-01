@@ -27,7 +27,7 @@ local markers = {
         local highlight = org_headline_hl .. level
         return { { symbol, highlight } }
     end,
-    checkbox = function(str, conf)
+    checkbox = function(str)
         local symbols = config.style.symbols.checkboxes
         local text = symbols.todo
         if str:match("[Xx]") then
