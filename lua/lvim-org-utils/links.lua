@@ -36,7 +36,7 @@ local check_is_org = function(link)
 end
 
 local find_link_string = function(link_string)
-    result = string.gsub(link_string, "%[%[(.-)%]%[?(.-)%]?%]", function(link, _)
+    local result = string.gsub(link_string, "%[%[(.-)%]%[?(.-)%]?%]", function(link, _)
         return link
     end)
     return result

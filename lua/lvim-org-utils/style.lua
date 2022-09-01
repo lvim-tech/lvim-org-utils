@@ -22,16 +22,14 @@ local markers = {
     stars = function(str)
         local level = #str <= 0 and 0 or #str
         local symbols = config.style.symbols.headlines
-        local symbol = add_symbol_padding(
-            (symbols[level] or config.style.symbols.headlines[1]),
-            level,
-            config.style.indent
-        )
+        local symbol =
+            add_symbol_padding((symbols[level] or config.style.symbols.headlines[1]), level, config.style.indent)
         local highlight = org_headline_hl .. level
         return { { symbol, highlight } }
     end,
-    expr = function(str)
+    checkbox = function(str, conf)
         local symbols = config.style.symbols.checkboxes
+        local text = symbols.todo
         if str:match("[Xx]") then
             return {
                 { "[", "OrgTSCheckboxChecked" },
@@ -51,6 +49,7 @@ local markers = {
                 { "]", "OrgTSCheckbox" },
             }
         end
+        return { { "[", "NonText" }, text, { "]", "NonText" } }
     end,
     bullet = function(str)
         if str:match("*") or str:match("+") or str:match("-") then
@@ -114,18 +113,12 @@ local function get_ts_positions(bufnr, start_row, end_row, root)
     local query = vim.treesitter.parse_query(
         "org",
         [[
-        (stars) @stars
-        (bullet) @bullet
-        (listitem . (bullet) . (paragraph .
-            (expr "[" "str" @_org_checkbox_check "]") @org_checkbox_done
-            (#match? @org_checkbox_done "^\\[[xX]\\]$")))
-        (listitem . (bullet) . (paragraph .
-            ((expr "[" "-" @_org_check_in_progress "]") @org_checkbox_cancelled
-            (#eq? @org_checkbox_cancelled "[-]"))))
-        (listitem . (bullet) . (paragraph .
-            (expr "[") @org_checkbox.left (#eq? @org_checkbox.left "[") .
-            (expr "]") @org_checkbox.right (#eq? @org_checkbox.right "]"))
-            @_org_checkbox_empty (#match? @_org_checkbox_empty "^\\[ \\]"))
+            (stars) @stars
+            ((bullet) @bullet
+            (#match? @bullet "[-\*\+]"))
+            (checkbox "[ ]") @org_checkbox
+            (checkbox status: (expr "str") @_org_checkbox_done_str (#any-of? @_org_checkbox_done_str "x" "X")) @org_checkbox_done
+            (checkbox status: (expr "-")) @org_checkbox_half
         ]]
     )
     for _, match, _ in query:iter_matches(root, bufnr, start_row, end_row) do

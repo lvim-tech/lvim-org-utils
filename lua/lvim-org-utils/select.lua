@@ -40,7 +40,7 @@ local function nui_select(entries, stuff, onUserChoice)
         position = "50%",
         size = {
             width = calculate_popup_width(formatted_entries, stuff.prompt or "Choice:"),
-            height = #formatted_entries,
+            height = #formatted_entries + 1,
         },
         border = {
             highlight = "NuiBorder",

@@ -18,7 +18,7 @@ M.prompt = function(data)
         position = "50%",
         size = {
             width = 60,
-            height = #formatted_lines,
+            height = #formatted_lines + 1,
         },
         border = {
             highlight = "NuiBorder",
