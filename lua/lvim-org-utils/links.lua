@@ -350,11 +350,36 @@ M.init = function()
     vim.api.nvim_create_autocmd("FileType", {
         pattern = "org",
         callback = function()
-            vim.keymap.set("n", config.links.keymaps.open, open, { buffer = true })
-            vim.keymap.set("n", config.links.keymaps.next_file, next_file, { buffer = true })
-            vim.keymap.set("n", config.links.keymaps.prev_file, prev_file, { buffer = true })
-            vim.keymap.set("n", config.links.keymaps.next_link, next_link, { buffer = true })
-            vim.keymap.set("n", config.links.keymaps.prev_link, prev_link, { buffer = true })
+            vim.keymap.set(
+                "n",
+                config.links.keymaps.open,
+                open,
+                { buffer = true, noremap = true, silent = true, desc = "Org open file" }
+            )
+            vim.keymap.set(
+                "n",
+                config.links.keymaps.next_file,
+                next_file,
+                { buffer = true, noremap = true, silent = true, desc = "Org next file" }
+            )
+            vim.keymap.set(
+                "n",
+                config.links.keymaps.prev_file,
+                prev_file,
+                { buffer = true, noremap = true, silent = true, desc = "Org prev file" }
+            )
+            vim.keymap.set(
+                "n",
+                config.links.keymaps.next_link,
+                next_link,
+                { buffer = true, noremap = true, silent = true, desc = "Org next link" }
+            )
+            vim.keymap.set(
+                "n",
+                config.links.keymaps.prev_link,
+                prev_link,
+                { buffer = true, noremap = true, silent = true, desc = "Org prev link" }
+            )
             vim.keymap.set("n", config.links.keymaps.preview, preview, { buffer = true })
         end,
         group = "LvimOrgUtils",
