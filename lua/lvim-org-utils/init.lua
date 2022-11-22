@@ -14,7 +14,7 @@ M.setup = function(user_config)
         clear = true,
     })
     vim.api.nvim_create_autocmd({
-        "BufRead",
+        "BufWinEnter",
     }, {
         pattern = "*.org",
         callback = function()
@@ -46,11 +46,11 @@ M.setup = function(user_config)
         callback = function()
             vim.schedule(function()
                 vim.schedule(function()
-                    vim.cmd([[setlocal foldexpr=OrgmodeFoldExpr()]])
+                    vim.cmd("setlocal conceallevel=2 concealcursor=nc foldexpr=OrgmodeFoldExpr()")
+                    if config.codeblock.active then
+                        codeblock.code_block()
+                    end
                 end)
-                if config.codeblock.active then
-                    codeblock.code_block()
-                end
             end)
         end,
         group = group,

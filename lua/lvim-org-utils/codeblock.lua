@@ -1,8 +1,8 @@
 local M = {}
 
 local NAMESPACE = vim.api.nvim_create_namespace("lvim-org-utils-codeblock")
-source_pattern_start = "#%+[bB][eE][gG][iI][nN]_[sS][rR][cC]"
-source_pattern_end = "#%+[eE][nN][dD]_[sS][rR][cC]"
+SOURCE_PATTERN_START = "#%+[bB][eE][gG][iI][nN]_[sS][rR][cC]"
+SOURCE_PATTERN_END = "#%+[eE][nN][dD]_[sS][rR][cC]"
 
 M.code_block = function()
     vim.api.nvim_buf_clear_namespace(0, NAMESPACE, 0, -1)
@@ -12,7 +12,7 @@ M.code_block = function()
     local lines = vim.api.nvim_buf_get_lines(bufnr, offset, range, false)
     local is_code = false
     for i = 1, #lines do
-        local _, source_start = lines[i]:find(source_pattern_start)
+        local _, source_start = lines[i]:find(SOURCE_PATTERN_START)
         if source_start then
             is_code = true
         end
@@ -24,7 +24,7 @@ M.code_block = function()
                 hl_eol = true,
             })
         end
-        local _, source_end = lines[i]:find(source_pattern_end)
+        local _, source_end = lines[i]:find(SOURCE_PATTERN_END)
         if source_end then
             is_code = false
         end
