@@ -14,17 +14,6 @@ M.setup = function(user_config)
         clear = true,
     })
     vim.api.nvim_create_autocmd({
-        "BufWinEnter",
-    }, {
-        pattern = "*.org",
-        callback = function()
-            if vim.bo.modified == false then
-                vim.cmd("edit!")
-            end
-        end,
-        group = group,
-    })
-    vim.api.nvim_create_autocmd({
         "BufEnter",
     }, {
         pattern = "*.org",
@@ -32,26 +21,10 @@ M.setup = function(user_config)
             if config.links.active then
                 links.navigation()
             end
-        end,
-        group = group,
-    })
-    vim.api.nvim_create_autocmd({
-        "BufEnter",
-        "InsertEnter",
-        "InsertLeave",
-        "CursorMoved",
-        "CursorMovedI",
-    }, {
-        pattern = "*.org",
-        callback = function()
-            vim.schedule(function()
-                vim.schedule(function()
-                    vim.cmd("setlocal conceallevel=2 concealcursor=nc foldexpr=OrgmodeFoldExpr()")
-                    if config.codeblock.active then
-                        codeblock.code_block()
-                    end
-                end)
-            end)
+            vim.cmd("setlocal conceallevel=2 concealcursor=nc")
+            if config.codeblock.active then
+                codeblock.code_block()
+            end
         end,
         group = group,
     })

@@ -109,8 +109,9 @@ local function add_empty_checkbox(bufnr, name, match, query, position, positions
 end
 
 local function get_ts_positions(bufnr, start_row, end_row, root)
+    local parse = vim.treesitter.query and vim.treesitter.query.parse or vim.treesitter.parse_query
     local positions = {}
-    local query = vim.treesitter.parse_query(
+    local query = parse(
         "org",
         [[
             (stars) @stars
