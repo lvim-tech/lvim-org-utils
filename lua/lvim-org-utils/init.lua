@@ -14,14 +14,26 @@ M.setup = function(user_config)
         clear = true,
     })
     vim.api.nvim_create_autocmd({
-        "BufEnter",
+        "InsertEnter",
+        "InsertLeave",
+        "CursorMoved",
+        "CursorMovedI",
+    }, {
+        pattern = "*.org",
+        callback = function()
+            vim.cmd("setlocal foldexpr=nvim_treesitter#foldexpr() conceallevel=2 concealcursor=nc")
+        end,
+        group = group,
+    })
+    vim.api.nvim_create_autocmd({
+        "BufWinEnter",
     }, {
         pattern = "*.org",
         callback = function()
             if config.links.active then
                 links.navigation()
             end
-            vim.cmd("setlocal conceallevel=2 concealcursor=nc")
+            vim.cmd("setlocal foldexpr=nvim_treesitter#foldexpr() conceallevel=2 concealcursor=nc")
             if config.codeblock.active then
                 codeblock.code_block()
             end
