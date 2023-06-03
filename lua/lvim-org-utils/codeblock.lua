@@ -1,8 +1,8 @@
-local M = {}
-
 local NAMESPACE = vim.api.nvim_create_namespace("lvim-org-utils-codeblock")
 SOURCE_PATTERN_START = "#%+[bB][eE][gG][iI][nN]_[sS][rR][cC]"
 SOURCE_PATTERN_END = "#%+[eE][nN][dD]_[sS][rR][cC]"
+
+local M = {}
 
 M.code_block = function()
     vim.api.nvim_buf_clear_namespace(0, NAMESPACE, 0, -1)

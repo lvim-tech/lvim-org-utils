@@ -1,6 +1,5 @@
-local M = {}
-
 local config = require("lvim-org-utils.config")
+local notify = require("lvim-ui-config.notify")
 local NAMESPACE = vim.api.nvim_create_namespace("lvim-org-utils-style")
 local org_headline_hl = "OrgTSHeadlineLevel"
 local list_groups = {
@@ -60,7 +59,7 @@ local markers = {
 }
 
 local function set_mark(bufnr, virt_text, lnum, start_col, end_col, highlight)
-    local ok, _ = pcall(vim.api.nvim_buf_set_extmark, bufnr, NAMESPACE, lnum, start_col, {
+    local ok, result = pcall(vim.api.nvim_buf_set_extmark, bufnr, NAMESPACE, lnum, start_col, {
         end_col = end_col,
         hl_group = highlight,
         virt_text = virt_text,
@@ -70,7 +69,7 @@ local function set_mark(bufnr, virt_text, lnum, start_col, end_col, highlight)
     })
     if not ok then
         vim.schedule(function()
-            vim.notify_once(result, "error", { title = "LVIM ORG" })
+            notify.error(result, { title = "LVIM ORG" })
         end)
     end
 end
@@ -109,6 +108,7 @@ local function add_empty_checkbox(bufnr, name, match, query, position, positions
 end
 
 local function get_ts_positions(bufnr, start_row, end_row, root)
+    ---@diagnostic disable-next-line: undefined-field
     local parse = vim.treesitter.query and vim.treesitter.query.parse or vim.treesitter.parse_query
     local positions = {}
     local query = parse(
@@ -177,6 +177,8 @@ local function get_mark_positions(bufnr, start_row, end_row)
     end)
     return positions
 end
+
+local M = {}
 
 M.init = function()
     vim.api.nvim_set_decoration_provider(NAMESPACE, {

@@ -1,12 +1,13 @@
-local M = {}
 local config = require("lvim-org-utils.config")
 local utils = require("lvim-org-utils.utils")
-local select = require("lvim-org-utils.select")
-local custom_popup = require("nui.popup")
-local event = require("nui.utils.autocmd").event
-
+local ui_config = require("lvim-ui-config.config")
+local select = require("lvim-ui-config.select")
+local popup = require("lvim-ui-config.popup")
+local notify = require("lvim-ui-config.notify")
 local links = {}
 local links_index = nil
+
+local M = {}
 
 local check_is_link = function(link_string)
     if link_string ~= nil then
@@ -118,7 +119,7 @@ local create_file = function(file)
     if is_file_exist then
         vim.cmd("e " .. file)
     else
-        vim.notify("Error creating file:\n" .. file, "error", {
+        notify.error("Error creating file:\n" .. file, {
             title = "LVIM ORG",
         })
     end
@@ -129,11 +130,16 @@ local link_open = function(file)
     if is_file_exist then
         vim.cmd("e " .. file)
     else
-        select({ "Create new file", "Show full path", "Cancel" }, { prompt = "File not exist!" }, function(choice)
+        local opts = ui_config.select({
+            "Create new file",
+            "Show full path",
+            "Cancel",
+        }, { prompt = "File not exist!" }, {})
+        select(opts, function(choice)
             if choice == "Create new file" then
                 create_file(file)
             elseif choice == "Show full path" then
-                vim.notify("Full path of file:\n" .. file, "info", {
+                notify.info("Full path where this file will be created:\n" .. file, {
                     title = "LVIM ORG",
                 })
             end
@@ -165,6 +171,7 @@ local word_normalizer = function()
     end
     word = vim.fn.expand("<cWORD>")
     word_escape = utils.regex_escape(word)
+    local i, j
     if string.find(word, "%[%[") then
         i, j = string.find(line, word_escape .. "? (.-)%]%]")
     end
@@ -172,7 +179,6 @@ local word_normalizer = function()
         word = string.sub(line, i, j)
         return word
     end
-    return nil
 end
 
 local link_prepare = function()
@@ -188,7 +194,7 @@ local link_prepare = function()
             is_external = true
         elseif check_is_org(link) then
             if is_link == "home_path" then
-                local home_path = os.getenv("HOME")
+                local home_path = os.getenv("HOME") or ""
                 link = link:gsub("^~", home_path)
             elseif is_link == "relative_path" then
                 local current_path = vim.fn.expand("%:p:h")
@@ -237,70 +243,8 @@ local open = function()
 end
 
 local preview_open = function(link)
-    assert(popup_reference == nil, "Sorry")
-    popup_reference = custom_popup({
-        enter = true,
-        focusable = false,
-        border = {
-            highlight = "NuiBorder",
-            style = { " ", " ", " ", " ", " ", " ", " ", " " },
-            text = {
-                top = "PREVIEW",
-                top_align = "center",
-            },
-        },
-        position = "50%",
-        size = {
-            width = "80%",
-            height = "80%",
-        },
-        buf_options = {
-            filetype = "org",
-            modifiable = true,
-            readonly = true,
-        },
-        win_options = {
-            winblend = 10,
-            winhighlight = "Normal:NuiBody,FloatBorder:NuiBorder",
-        },
-    })
-    if popup_reference ~= nil then
-        local is_file_exist = utils.file_exists(link)
-        if is_file_exist then
-            local lines = {}
-            local link_file = io.open(link, "r")
-            if not link_file then
-                return
-            end
-            for line in link_file:lines() do
-                table.insert(lines, line)
-            end
-            io.close(link_file)
-            vim.api.nvim_buf_set_lines(popup_reference.bufnr, 0, 1, false, lines)
-            popup_reference:mount()
-            popup_reference:on(event.BufLeave, function()
-                popup_reference:unmount()
-                popup_reference = nil
-            end)
-            popup_reference:map("n", "<esc>", function()
-                popup_reference:unmount()
-                popup_reference = nil
-            end, { noremap = true })
-            popup_reference:map("n", "<space>", function()
-                popup_reference:unmount()
-                popup_reference = nil
-            end, { noremap = true })
-            popup_reference:map("n", "q", function()
-                popup_reference:unmount()
-                popup_reference = nil
-            end, { noremap = true })
-        else
-            popup_reference = nil
-            vim.notify("File is not exist:\n" .. vim.inspect(link), "error", {
-                title = "LVIM ORG",
-            })
-        end
-    end
+    local opts = ui_config.popup("─── LVIM ORG PREVIEW ───", "org", {})
+    popup(opts, link, true, "<Esc>")
 end
 
 local preview = function()
@@ -316,7 +260,7 @@ end
 
 local next_file = function()
     if links_index == #links then
-        vim.notify("This is a last file", "info", {
+        notify.error("This is the last file", {
             title = "LVIM ORG",
         })
     else
@@ -327,7 +271,7 @@ end
 
 local prev_file = function()
     if links_index == 1 then
-        vim.notify("This is a first file", "info", {
+        notify.error("This is the first file", {
             title = "LVIM ORG",
         })
     else

@@ -1,5 +1,3 @@
-local prompt = require("lvim-org-utils.prompt")
-
 local M = {}
 
 M.merge = function(t1, t2)
@@ -71,7 +69,7 @@ M.index_of = function(tbl, value)
 end
 
 M.split = function(string, delimiter)
-    result = {}
+    local result = {}
     for match in (string .. delimiter):gmatch("(.-)" .. delimiter) do
         table.insert(result, match)
     end
@@ -89,38 +87,6 @@ end
 -- end
 M.regex_escape = function(str)
     return str:gsub("[%(%)%.%%%+%-%*%?%[%^%$%]]", "%%%1")
-end
-
-M.allow_leave = function()
-    prompt.prompt({
-        data = {
-            title = "Save or lose before leave?",
-            lines = {
-                {
-                    text = "Save",
-                    fn = function()
-                        vim.cmd([[write!]])
-                    end,
-                },
-                {
-                    text = "Lose",
-                    fn = function()
-                        vim.cmd([[earlier 1f]])
-                        vim.cmd([[write!]])
-                    end,
-                },
-                {
-                    text = "Cancel",
-                    fn = function() end,
-                },
-            },
-        },
-        opt = {},
-    })
-end
-
-M.custom_prompt = function(data)
-    prompt.prompt(data)
 end
 
 return M

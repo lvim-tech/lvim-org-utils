@@ -1,14 +1,12 @@
 local M = {
     links = {
         active = true,
-        org_path = { "~/Org/" },
         keymaps = {
             open = "<CR>",
             next_file = "m",
             prev_file = "M",
             next_link = "n",
             prev_link = "N",
-            -- back = "<BS>",
             preview = "P",
         },
     },
