@@ -30,6 +30,8 @@ M.setup = function(user_config)
     }, {
         pattern = "*.org",
         callback = function()
+            vim.opt_local.tabstop = 2
+            vim.opt_local.shiftwidth = 2
             if config.links.active then
                 links.navigation()
             end
